@@ -1,33 +1,40 @@
-import Content from "./Components/Content"
-import Header from "./Components/Header"
-import Total from "./Components/Total"
+import { useState } from "react"
+import Button from "./Components/Button"
+import Title from "./Components/Title"
+import Statistic from "./Components/Statistic"
+import Anecdotes from "./Components/Anecdotes"
 
 function App() {
   
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+  const [total, setTotal] = useState(good+neutral+bad)
+
+  const handleOperation = (type) => {
+    if(type == "good"){
+      setGood(good+1)
+    }else if(type == "neutral"){
+      setNeutral(neutral + 1)
+    } else if( type == "bad"){
+      setBad(bad+ 1)
+    } else {
+      return
+    }
+    setTotal(total+1)
   }
 
   return (
-    <div>
-      <Header course={course.name}/>
-      <Content parts={course.parts}/>
-      <Total parts={course.parts}/>
-    </div>
+    <>
+      <div>
+        <Title title={"feedback"}/>
+        <Button handleClick={() => handleOperation("good")} text={"good"}/>
+        <Button handleClick={() => handleOperation("neutral")} text={"neutral"}/>
+        <Button handleClick={() => handleOperation("bad")} text={"bad"}/>
+      </div>
+      <Statistic good={good} neutral={neutral} bad={bad} total={total}/>
+      <Anecdotes />
+    </>
   )
 }
 
