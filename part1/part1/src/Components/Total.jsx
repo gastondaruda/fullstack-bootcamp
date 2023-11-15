@@ -1,6 +1,10 @@
 
-export default function Total({param1,param2,param3}) {
+export default function Total({parts}) {
+
+
+    const total = parts.reduce((acc, value) => acc + value.exercises,0);
+
     return (
-        <p>Number of exercises {param1 + param2 + param3}</p>
+        <p>Number of exercises {total}</p>
     )
 }

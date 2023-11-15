@@ -1,9 +1,12 @@
 import Part from "./Part";
 
-export default function Content({part, exercises}) {
+export default function Content({parts}) {
+
     return (
-        <p>
-            <Part part={part} exercises={exercises}/>
-        </p>
+        <>
+            {
+                parts.map(part => <Part part={part.name} exercises={part.exercises}/>)
+            }
+        </>
     )
 }
