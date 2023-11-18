@@ -4,7 +4,6 @@ import Content from './Content'
 import Total from './Total'
 
 export default function Course({course}) {
-    console.log(course.parts)
 
     return (
         <>
