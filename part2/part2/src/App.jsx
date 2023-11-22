@@ -1,8 +1,10 @@
-import {useState} from "react"
+import {useState, useEffect} from "react"
+import axios from "axios"
 import Course from "./components/Course"
 import Filter from "./components/Filter"
 import Form from "./components/Form"
 import Persons from "./components/Persons"
+import Countries from "./components/Countries"
 
 const App = () => {
   /*const courses = [
@@ -49,20 +51,29 @@ const App = () => {
       ],
     },
   ]*/
-
+/*
   const personsArr = [
     { name: 'Arto Hellas', number: '040-123456' },
     { name: 'Ada Lovelace', number: '39-44-5323523' },
     { name: 'Dan Abramov', number: '12-43-234345' },
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ]
+  */
 
 
-  const [persons, setPersons] = useState(personsArr)
-
+  const [persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [newNumber, setNewNumber] = useState("")
 
+//exercise 2.11
+  useEffect(() => {
+    axios      
+    .get('http://localhost:3001/persons')      
+    .then(response => {
+              console.log('promise fulfilled')        
+              setPersons(response.data)      
+            })
+  },[])
 
   const addPerson = (e) => {
     e.preventDefault()
@@ -94,7 +105,7 @@ const App = () => {
     let result = persons.filter(person => person.name.toUpperCase().includes(inputSearch.toUpperCase()))
 
     if(inputSearch === ""){
-      setPersons(personsArr)
+      setPersons(persons)
     }else{
       console.log(result)
       setPersons(result)
@@ -128,6 +139,7 @@ const App = () => {
         persons={persons}
       />
     </div>
+    <Countries />
     </>
   )
   }
