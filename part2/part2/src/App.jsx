@@ -1,10 +1,13 @@
 import {useState, useEffect} from "react"
 import axios from "axios"
+import personServices from "./services/notes"
 import Course from "./components/Course"
 import Filter from "./components/Filter"
 import Form from "./components/Form"
 import Persons from "./components/Persons"
 import Countries from "./components/Countries"
+import Notification from "./components/Notification"
+import "../app.css"
 
 const App = () => {
   /*const courses = [
@@ -62,43 +65,119 @@ const App = () => {
 
 
   const [persons, setPersons] = useState([])
-  const [ newName, setNewName ] = useState('')
+  const [ newName, setNewName ] = useState("")
   const [newNumber, setNewNumber] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [messageStyle, setMessageStyle] = useState("")
 
 //exercise 2.11
   useEffect(() => {
-    axios      
-    .get('http://localhost:3001/persons')      
-    .then(response => {
-              console.log('promise fulfilled')        
-              setPersons(response.data)      
-            })
+    fetchData()
   },[])
-
+//---------------------------------------
+  const fetchData = () => {
+    
+    personServices
+    .getAll()    
+    .then(initialData => {
+              console.log('promise fulfilled')        
+              setPersons(initialData)
+              setLoading(false)      
+            })
+      .catch(err => {
+        console.log(err)
+        setMessageStyle(".error")
+        setSuccessMessage(err)
+      })
+  }
+//---------------------------------------
   const addPerson = (e) => {
     e.preventDefault()
+    setLoading(true)
     const newPerson = {
       name: newName,
       number: newNumber
     }
 
+    //exercise 2.18
     if(persons.find(person => person.name === newPerson.name)){
-      alert(`${newPerson.name} is already added to phonebook`)
-    }else{
-      setPersons(persons.concat(newPerson))
-    }
+      if (window.confirm("Are you sure you wish to change this person number?")){
+      setLoading(true)
+      const changePerson = {...newPerson, number: newNumber}
+      const personFind = persons.find(person => person.name === newPerson.name)
+      personServices
+      .update(personFind.id, changePerson)
+      .then( res => {
+        console.log(res)
+        fetchData()
+        setLoading(false)
+      })
+      //fetchData()
 
+    }
+    }else{
+      //exercise 2.15
+      personServices
+      .create(newPerson)
+      .then(res => {
+        console.log(res)
+        
+        fetchData()
+      })
+      .catch(err => {
+        console.log(err)
+        setMessageStyle(".error")
+        setSuccessMessage(`${newPerson.name} was not added successfully...`)
+      })
+      //setPersons(persons.concat(newPerson))
+    }
+    //exercise 2.19
+    setSuccessMessage(`${newPerson.name} was added successfully...`)
+    setMessageStyle("success")
+        setTimeout(() => {
+                    setSuccessMessage(null)
+                    }, 3000)
+
+    setLoading(false)
     setNewName("")
-    console.log(persons)
+    setNewNumber("")
 
   }
+//---------------------------------------
+  //exercise 2.17
+  const handleDelete = (e) => {
+    setLoading(true)
+    const id = e.target.id
+    const person = persons.find(p => p.id === id)
+    if (window.confirm("Are you sure you wish to delete this person?")) {
+      personServices
+      .remove(id)
+      .then(response => {
+        console.log(response)
+        setPersons(persons.filter((p) => p.id.toString() !== id))
+        setLoading(false)
+      })
+      //exercises 2.20
+      .catch(err => {
+        console.log(err)
+        setMessageStyle(".error")
+        setSuccessMessage(`${person.name} has already been removed...`)
+      })
+    }
+    console.log(e.target.id)
+  }
+
+  //---------------------------------------
 
   const handleAddPerson = (e) => {
     setNewName(e.target.value)
   }
+  //---------------------------------------
   const handleNewNumber = (e) => {
     setNewNumber(e.target.value)
   }
+  //---------------------------------------
   const handleSearch = (e) => {
     let inputSearch = e.target.value
 
@@ -110,12 +189,7 @@ const App = () => {
       console.log(result)
       setPersons(result)
     }
-
-
-    }
-
-  
-
+  }
 
   return(
     <>
@@ -131,13 +205,20 @@ const App = () => {
       <Form 
         addPerson={addPerson}
         newName={newName}
+        newNumber={newNumber}
         handleAddPerson={handleAddPerson}
         handleNewNumber={handleNewNumber}
       />
+      <Notification message={successMessage} style={messageStyle}/>
       <h2>Numbers</h2>
-      <Persons 
-        persons={persons}
-      />
+      {
+        loading ? <span>Loading...</span> : 
+          <Persons 
+            persons={persons}
+            handleDelete={handleDelete}
+          />
+      }
+      
     </div>
     <Countries />
     </>

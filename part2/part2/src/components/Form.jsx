@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Form({addPerson, newName, handleAddPerson, handleNewNumber}) {
+export default function Form({addPerson, newName,newNumber, handleAddPerson, handleNewNumber}) {
     return (
         <form onSubmit={addPerson}>
         <h3>Add a new</h3>
@@ -15,6 +15,7 @@ export default function Form({addPerson, newName, handleAddPerson, handleNewNumb
                 <div>newNumber: 
                     <input
                     placeholder="Add number..."
+                    value={newNumber}
                     onChange={handleNewNumber}
                     required
                     />
