@@ -9,8 +9,8 @@ export default function Persons({persons, handleDelete}) {
                                                 <input
                                                     type="button"
                                                     value="delete"
-                                                    id={person.id}
-                                                    onClick={handleDelete}
+                                                    id={person._id}
+                                                    onClick={(e) => handleDelete(e)}
                                                 />    
                                             </li>)
             }

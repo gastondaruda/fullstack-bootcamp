@@ -15,26 +15,30 @@ const App = () => {
   const [ newName, setNewName ] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [loading, setLoading] = useState(true)
-  const [successMessage, setSuccessMessage] = useState(null)
   const [messageStyle, setMessageStyle] = useState("")
 
 //exercise 2.11
   useEffect(() => {
     console.log("useEffect")
     //exercises 3.9
-    personServices
-    .getAll()
-    .then(initialData => {
-      setPersons(initialData)
-    })
+    getInfo()
     setLoading(false)
   },[])
 //---------------------------------------
 
+const getInfo = () => {
+  personServices
+    .getAll()
+    .then(initialData => {
+      setPersons(initialData)
+    })
+  setLoading(false)
+}
+
 //---------------------------------------
   const addPerson = (e) => {
     e.preventDefault()
-    
+    setLoading(true)
     const newPerson = {
       name: newName,
       number: newNumber
@@ -42,10 +46,8 @@ const App = () => {
   //exercises 3.9
     personServices
     .createPerson(newPerson)
-    .then(res => console.log(res, "fetching..."))
-    
-    setPersons(persons.concat(newPerson))
-    
+    .then(() => getInfo())
+        
     setLoading(false)
     setNewName("")
     setNewNumber("")
@@ -55,25 +57,14 @@ const App = () => {
 //---------------------------------------
   //exercise 2.17
   const handleDelete = (e) => {
-    setLoading(true)
     const id = e.target.id
-    const person = persons.find(p => p.id === id)
+    console.log(id)
+    setLoading(true)
     if (window.confirm("Are you sure you wish to delete this person?")) {
-      personServices
-      .remove(id)
-      .then(response => {
-        console.log(response)
-        setPersons(persons.filter((p) => p.id.toString() !== id))
-        setLoading(false)
-      })
-      //exercises 2.20
-      .catch(err => {
-        console.log(err)
-        setMessageStyle(".error")
-        setSuccessMessage(`${person.name} has already been removed...`)
-      })
-    }
-    console.log(e.target.id)
+      personServices.remove(id)
+      .then(() =>  getInfo())
+      setLoading(false)
+  }
   }
 
   //---------------------------------------
@@ -103,7 +94,7 @@ const App = () => {
         handleAddPerson={handleAddPerson}
         handleNewNumber={handleNewNumber}
       />
-      <Notification message={successMessage} style={messageStyle}/>
+      {/*<Notification message={successMessage} style={messageStyle}/>*/}
       <h2>Numbers</h2>
       {
         loading ? <span>Loading...</span> : 

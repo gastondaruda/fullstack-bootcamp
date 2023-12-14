@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = 'https://api-person-bootcamp.onrender.com/api/persons'
 
 //exercise 2.16
 
